@@ -1,1 +1,5 @@
 requests
+smart_open
+pandas
+boto3
+botocore

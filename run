@@ -5,4 +5,4 @@
 # commands reference: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html
 
 sam build
-sam local invoke -e events/sqs_event.json --docker-network localstack_default
+sam local invoke -e events/event.json -n local.env.json --docker-network localstack_default

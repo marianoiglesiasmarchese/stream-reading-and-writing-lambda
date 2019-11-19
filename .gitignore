@@ -245,3 +245,6 @@ $RECYCLE.BIN/
 
 # PyCharm files
 .idea
+
+# Localstack data
+localstack/data

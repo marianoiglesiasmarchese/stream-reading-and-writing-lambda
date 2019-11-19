@@ -1,42 +1,41 @@
 import json
+import os
+import logging
+import pandas as pd
+import boto3
 
-# import requests
+
+# setup logger
+logger = logging.getLogger()
+logger.setLevel(os.environ.get('LOG_LEVEL', 'INFO').upper())
 
 
 def lambda_handler(event, context):
-    """Sample pure Lambda function
-
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
-
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
-
-    context: object, required
-        Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
-
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
-
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
-
-    #     raise e
+    stream reading and writing
+    """
+    read_and_persistence_with_boto3(event)
 
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
+            "message": event,
         }),
     }
+
+
+def read_and_persistence_with_boto3(event):
+    # boto3 s3 client
+    s3_endpoint = os.environ.get('S3_ENDPOINT', 'http://s3.amazonaws.com/')
+    s3_bucket = event.get("bucket")
+    s3_key = event.get("key")
+    s3_client = boto3.client('s3', endpoint_url=s3_endpoint)
+
+    # fetching an object
+    obj = s3_client.get_object(Bucket=s3_bucket, Key=s3_key)
+    csv_file_df = pd.read_csv(obj['Body'])
+    logger.info('file: \n %s', csv_file_df)
+
+    # pushing it!
+    s3_client.put_object(Body=csv_file_df.to_csv(index=False), Bucket=s3_bucket, Key='result/' + s3_key)
+    logger.info("persistence on aws s3 done with boto3!")

@@ -9,6 +9,11 @@ Description: >
 Globals:
   Function:
     Timeout: 3
+Parameters:
+  LOG_LEVEL:
+    Type: String
+  S3_ENDPOINT:
+    Type: String
 
 Resources:
   HelloWorldFunction:
@@ -17,6 +22,10 @@ Resources:
       CodeUri: main/
       Handler: app.lambda_handler
       Runtime: python3.7
+      Environment:
+        Variables:
+          S3_ENDPOINT: !Ref S3_ENDPOINT
+          LOG_LEVEL: !ref LOG_LEVEL
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
