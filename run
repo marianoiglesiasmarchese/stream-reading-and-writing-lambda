@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# first at all, give me 755 execute permissions with:  `chmod 755 run` - this allows only the owner of the file to execute the script
+
+# commands reference: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html
+
+sam build
+sam local invoke -e events/sqs_event.json --docker-network localstack_default
