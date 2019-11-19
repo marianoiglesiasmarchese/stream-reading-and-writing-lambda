@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  localstack:
+    container_name: local-aws-services
+    build:
+      context: .
+      dockerfile: ./Dockerfile.localstack
+    ports:
+      - "4567-4584:4567-4584"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+    environment:
+      - SERVICES=s3,sqs,es
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=key
+      - AWS_SECRET_ACCESS_KEY=secret
+      - "HOSTNAME=${MY_DOCKER_IP:-127.0.0.1}"
+      - "HOSTNAME_EXTERNAL=${MY_DOCKER_IP:-127.0.0.1}"
+    volumes:
+      - ./data/localstack:/tmp/localstack
